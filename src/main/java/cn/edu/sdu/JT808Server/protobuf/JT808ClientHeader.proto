@@ -1,0 +1,14 @@
+syntax = "proto2";
+
+package protobuf;
+
+option optimize_for = SPEED;
+option java_package = "cn.edu.sdu.JT808Server.protobuf";
+option java_outer_classname = "ClientDataOnlyHeader";
+
+message Protocol {
+
+    required int32 protoType = 1;
+    optional string terminalPhone = 2;
+
+}

@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>RTMP-Test</title>
+
+    <link href="http://vjs.zencdn.net/5.5.3/video-js.css" rel="stylesheet">
+</head>
+<body>
+    <video id="test" class="video-js vjs-default=skin" controls preload="auto"
+           width="640" height="480" data-setup="{}">
+        <source src="rtmp://202.194.14.73/myapp/test" type="rtmp/flv">
+    </video>
+    <script>
+        var player = videojs('#player');
+    </script>
+    <script src="http://vjs.zencdn.net/5.5.3/video.js"></script>
+</body>
+</html>

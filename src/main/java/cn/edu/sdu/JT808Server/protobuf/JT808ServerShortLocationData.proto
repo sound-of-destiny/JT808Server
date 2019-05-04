@@ -1,0 +1,12 @@
+syntax = "proto2";
+
+package protobuf;
+
+option optimize_for = SPEED;
+option java_outer_classname = "LocationData";
+
+message TerminalLocationMsg {
+    optional double latitude = 1;
+    optional double longitude = 2;
+    optional string time = 3;
+}
