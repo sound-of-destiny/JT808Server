@@ -1,0 +1,18 @@
+# IDE
+.idea/
+
+# gradle
+.gradle/
+gradle/
+
+# else
+build/
+JT808ServerOriginData/
+JT808ServerShortLocationData/
+logs/
+out/
+photos/
+jt808.pid
+
+
+
