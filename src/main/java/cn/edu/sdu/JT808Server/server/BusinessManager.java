@@ -13,22 +13,24 @@ public class BusinessManager {
     private Map<Integer, Channel> replyFlowIdMap;
     private Map<String, Channel> terminalPhoneMap;
 
-    private static volatile BusinessManager instance = null;
-
     public static BusinessManager getInstance() {
-        if (instance == null) {
-            synchronized (BusinessManager.class){
-                if (instance == null) {
-                    instance = new BusinessManager();
-                }
-            }
-        }
-        return instance;
+        return Singleton.INSTANCE.getSingleton();
     }
 
     private BusinessManager() {
         this.replyFlowIdMap = new ConcurrentHashMap<>();
         this.terminalPhoneMap = new ConcurrentHashMap<>();
+    }
+
+    private enum Singleton {
+        INSTANCE;
+        private BusinessManager singleton;
+        Singleton() {
+            singleton = new BusinessManager();
+        }
+        public BusinessManager getSingleton() {
+            return singleton;
+        }
     }
 
     public Channel findChannelByReplyFlowId(int replyFlowId) {

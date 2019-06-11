@@ -11,6 +11,7 @@ import cn.edu.sdu.JT808Server.server.SessionManager;
 import cn.edu.sdu.JT808Server.util.*;
 import com.google.protobuf.ByteString;
 import io.netty.buffer.ByteBuf;
+import io.netty.channel.ChannelHandler;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.group.ChannelGroup;
 import io.netty.channel.group.DefaultChannelGroup;
@@ -30,15 +31,14 @@ import java.util.concurrent.ConcurrentHashMap;
 public class JT808ServerDecoder extends ByteToMessageDecoder {
 
     private static ChannelGroup channelGroup = new DefaultChannelGroup(GlobalEventExecutor.INSTANCE);
-    private static final String QUEUE_NAME = "JT808Server_OriginData_Queue";
 
     @Override
     public void userEventTriggered(ChannelHandlerContext ctx, Object evt) throws Exception {
         if (evt instanceof IdleStateEvent) {
             IdleStateEvent e = (IdleStateEvent) evt;
             if (e.state() == IdleState.READER_IDLE) {
-                ctx.close();
                 log.info("【终端断开】 " + ctx.channel());
+                ctx.channel().close();
             }
         }
     }
@@ -60,7 +60,7 @@ public class JT808ServerDecoder extends ByteToMessageDecoder {
         in.readBytes(b);
         byte[] bs = JT808ProtocolUtils.doEscape4Receive(b, 0, b.length - 1);
 
-        MQUtil.toQueue(QUEUE_NAME, bs);
+        MQUtil.toQueue(MQUtil.JT808Server_OriginData_Queue, bs);
 
         // 1. 消息头 16byte 或 12byte
         MsgHeader msgHeader = parseMsgHeaderFromBytes(bs);
@@ -108,6 +108,8 @@ public class JT808ServerDecoder extends ByteToMessageDecoder {
             return;
         }
 
+
+        // TODO 移除对象
         switch (msgHeaderId) {
 
             // 终端通用应答

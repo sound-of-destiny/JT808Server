@@ -32,6 +32,6 @@ public class JT808ServerMediaDataHandler extends SimpleChannelInboundHandler<Ser
         fos.flush();
         fos.close();
 
-        MQUtil.fanout(EXCHANGE_NAME, msg.toByteArray());
+
     }
 }

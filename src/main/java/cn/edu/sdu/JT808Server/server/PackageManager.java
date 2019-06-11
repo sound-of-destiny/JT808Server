@@ -6,21 +6,23 @@ import java.util.concurrent.ConcurrentHashMap;
 public class PackageManager {
     private Map<String, Map> terminalPhoneMap;
 
-    private static volatile PackageManager instance = null;
-
     public static PackageManager getInstance() {
-        if (instance == null) {
-            synchronized (BusinessManager.class){
-                if (instance == null) {
-                    instance = new PackageManager();
-                }
-            }
-        }
-        return instance;
+        return Singleton.INSTANCE.getSingleton();
     }
 
     private PackageManager() {
         this.terminalPhoneMap = new ConcurrentHashMap<>();
+    }
+
+    private enum Singleton {
+        INSTANCE;
+        private PackageManager singleton;
+        Singleton() {
+            singleton = new PackageManager();
+        }
+        public PackageManager getSingleton() {
+            return singleton;
+        }
     }
 
     public synchronized void putByTerminalPhone(String terminalPhone, Map map) {

@@ -1,63 +1,63 @@
 package protocol;
 
 public class WarningFlag {
-    // 1:紧急报警,触动报警开关后触发
+    // 0:紧急报警,触动报警开关后触发
     private boolean warningFlag;
     // 1:超速报警
     private boolean overSpeeding;
-    // 1:疲劳驾驶
+    // 2:疲劳驾驶
     private boolean overTired;
-    // 1:危险预警
+    // 3:危险预警
     private boolean dangerous;
-    // 1:GNSS 模块发生故障
+    // 4:GNSS 模块发生故障
     private boolean GNSSFault;
-    // 1:GNSS 天线未接或被剪断
+    // 5:GNSS 天线未接或被剪断
     private boolean GNSSAntennaFault;
-    // 1:GNSS 天线短路
+    // 6:GNSS 天线短路
     private boolean GNSSAntennaShortCircuit;
-    // 1:终端主电源欠压
+    // 7:终端主电源欠压
     private boolean terminalMainPowerUnderVoltage;
-    // 1:终端主电源掉电
+    // 8:终端主电源掉电
     private boolean terminalMainPowerFailure;
-    // 1:终端 LCD 或显示器故障
+    // 9:终端 LCD 或显示器故障
     private boolean TerminalLCDFault;
-    // 1:TTS 模块故障
+    // 10:TTS 模块故障
     private boolean TTSFault;
-    // 1:摄像头故障
+    // 11:摄像头故障
     private boolean cameraFault;
-    // 1:道路运输证 IC 卡模块故障
+    // 12:道路运输证 IC 卡模块故障
     private boolean ICCardFault;
-    // 1:超速预警
+    // 13:超速预警
     private boolean speeding;
-    // 1:疲劳驾驶预警
+    // 14:疲劳驾驶预警
     private boolean tired;
-    // 1:当天累计驾驶超时
+    // 18:当天累计驾驶超时
     private boolean driveTimeout;
-    // 1:超时停车
+    // 19:超时停车
     private boolean parkingOvertime;
-    // 1:进出区域
+    // 20:进出区域
     private boolean throughArea;
-    // 1:进出路线
+    // 21:进出路线
     private boolean throughRoad;
-    // 1:路段行驶时间不足/过长
+    // 22:路段行驶时间不足/过长
     private boolean roadTimeout;
-    // 1:路线偏离报警
+    // 23:路线偏离报警
     private boolean roadFault;
-    // 1:车辆 VSS 故障
+    // 24:车辆 VSS 故障
     private boolean VSSFault;
-    // 1:车辆油量异常
+    // 25:车辆油量异常
     private boolean vehicleOilException;
-    // 1:车辆被盗(通过车辆防盗器)
+    // 26:车辆被盗(通过车辆防盗器)
     private boolean vehicleTheft;
-    // 1:车辆非法点火
+    // 27:车辆非法点火
     private boolean vehicleIllegalIgnition;
-    // 1:车辆非法位移
+    // 28:车辆非法位移
     private boolean vehicleIllegalShift;
-    // 1:碰撞预警
+    // 29:碰撞预警
     private boolean collisionWarning;
-    // 1:侧翻预警
+    // 30:侧翻预警
     private boolean rolloverWarning;
-    // 1:非法开门报警(终端未设置区域时,不判断非法开门)
+    // 31:非法开门报警(终端未设置区域时,不判断非法开门)
     private boolean illegalOpenDoor;
 
     @Override

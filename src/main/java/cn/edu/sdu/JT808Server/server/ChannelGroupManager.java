@@ -7,8 +7,6 @@ import java.util.concurrent.ConcurrentHashMap;
 
 public class ChannelGroupManager {
 
-    private static volatile ChannelGroupManager instance = null;
-
     private Map<String, ChannelGroup> channelGroupMap;
 
     private ChannelGroupManager() {
@@ -16,14 +14,18 @@ public class ChannelGroupManager {
     }
 
     public static ChannelGroupManager getInstance() {
-        if (instance == null) {
-            synchronized (SessionManager.class) {
-                if (instance == null) {
-                    instance = new ChannelGroupManager();
-                }
-            }
+        return Singleton.INSTANCE.getSingleton();
+    }
+
+    private enum Singleton {
+        INSTANCE;
+        private ChannelGroupManager singleton;
+        Singleton() {
+            singleton = new ChannelGroupManager();
         }
-        return instance;
+        public ChannelGroupManager getSingleton() {
+            return  singleton;
+        }
     }
 
 

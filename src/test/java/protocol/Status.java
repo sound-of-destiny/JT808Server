@@ -50,7 +50,7 @@ public class Status {
                 + frontDoorOpen + ", \"middleDoorOpen\" : " + middleDoorOpen + ", \"endDoorOpen\" : "
                 + endDoorOpen + ", \"driverDoorOpen\" : " + driverDoorOpen + ", \"otherDoorOpen\" : "
                 + otherDoorOpen + ", \"GPS\" : " + GPS + ", \"beidou\" : " + beidou + ", \"GLONASS\" : "
-                + GLONASS + ", \"Galileo\" : " + Galileo + "  }";
+                + GLONASS + ", \"Galileo\" : " + Galileo + " }";
     }
 
     public boolean isACC() {

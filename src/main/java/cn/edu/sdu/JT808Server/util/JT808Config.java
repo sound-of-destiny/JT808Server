@@ -2,7 +2,7 @@ package cn.edu.sdu.JT808Server.util;
 
 public class JT808Config {
     private int terminalPort;
-    private int webPort;
+    private int clientPort;
     private int testPort;
 
     private String mqHost;
@@ -24,12 +24,12 @@ public class JT808Config {
         this.terminalPort = terminalPort;
     }
 
-    public int getWebPort() {
-        return webPort;
+    public int getClientPort() {
+        return clientPort;
     }
 
-    public void setWebPort(int webPort) {
-        this.webPort = webPort;
+    public void setClientPort(int clientPort) {
+        this.clientPort = clientPort;
     }
 
     public int getTestPort() {

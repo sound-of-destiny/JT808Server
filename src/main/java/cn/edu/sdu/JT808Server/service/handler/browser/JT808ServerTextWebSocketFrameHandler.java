@@ -3,9 +3,9 @@ package cn.edu.sdu.JT808Server.service.handler.browser;
 import cn.edu.sdu.JT808Server.protocol.Session;
 import cn.edu.sdu.JT808Server.server.BusinessManager;
 import cn.edu.sdu.JT808Server.server.ChannelGroupManager;
+import cn.edu.sdu.JT808Server.server.JT808Server;
 import cn.edu.sdu.JT808Server.server.SessionManager;
 import cn.edu.sdu.JT808Server.util.BitOperator;
-import cn.edu.sdu.JT808Server.util.CountTool;
 import cn.edu.sdu.JT808Server.util.JT808Const;
 import cn.edu.sdu.JT808Server.util.JT808ProtocolUtils;
 import io.netty.buffer.Unpooled;
@@ -15,8 +15,6 @@ import io.netty.channel.group.DefaultChannelGroup;
 import io.netty.handler.codec.http.websocketx.TextWebSocketFrame;
 import io.netty.util.concurrent.GlobalEventExecutor;
 import lombok.extern.slf4j.Slf4j;
-
-import java.util.concurrent.TimeUnit;
 
 @Slf4j
 public class JT808ServerTextWebSocketFrameHandler extends SimpleChannelInboundHandler<TextWebSocketFrame> {
@@ -30,12 +28,14 @@ public class JT808ServerTextWebSocketFrameHandler extends SimpleChannelInboundHa
 
         System.out.println("【收到消息】　" + msg.text());
         String receivedMsg = msg.text();
-        if(receivedMsg.startsWith("0x")||receivedMsg.startsWith("0X")){
+
+        if(receivedMsg.startsWith("0x") || receivedMsg.startsWith("0X")){
             receivedMsg = receivedMsg.substring(2);
         }
         String code = receivedMsg.substring(0, 4);
         String terminalPhone = receivedMsg.substring(4);
         Session session = SessionManager.getInstance().findByTerminalPhone(terminalPhone);
+        if (session == null) return;
         switch (Integer.valueOf(code, 16)) {
 
             // 补传分包请求
@@ -46,18 +46,13 @@ public class JT808ServerTextWebSocketFrameHandler extends SimpleChannelInboundHa
             // 设置终端参数
             case JT808Const.cmd_terminal_param_settings:
                 System.out.println("【设置终端参数】");
-                if (session != null) {
-                    setTerminalParam(ctx, session.getChannel(), terminalPhone);
-                }
+                setTerminalParam(ctx, session.getChannel(), terminalPhone);
                 break;
 
             // 查询终端参数
             case JT808Const.cmd_terminal_param_query:
                 System.out.println("【查询终端参数】");
-                if (session != null) {
-                    CountTool countTool = new CountTool();
-                    sendToTerminalHeader(ctx, session.getChannel(), terminalPhone, JT808Const.cmd_terminal_param_query, countTool);
-                }
+                sendToTerminalHeader(ctx, session.getChannel(), terminalPhone, JT808Const.cmd_terminal_param_query);
                 break;
 
             // 终端控制
@@ -68,10 +63,7 @@ public class JT808ServerTextWebSocketFrameHandler extends SimpleChannelInboundHa
             // 位置信息查询
             case JT808Const.cmd_terminal_location_query:
                 System.out.println("【位置信息查询】");
-                if (session != null) {
-                    CountTool countTool = new CountTool();
-                    sendToTerminalHeader(ctx, session.getChannel(), terminalPhone, JT808Const.cmd_terminal_location_query, countTool);
-                }
+                sendToTerminalHeader(ctx, session.getChannel(), terminalPhone, JT808Const.cmd_terminal_location_query);
                 break;
 
             // 临时位置跟踪控制
@@ -82,10 +74,8 @@ public class JT808ServerTextWebSocketFrameHandler extends SimpleChannelInboundHa
             // 查询终端属性
             case JT808Const.cmd_terminal_attribute_query:
                 System.out.println("【查询终端属性】");
-                if (session != null) {
-                    sendToTerminalHeaderNoReplyFlowId(ctx, session.getChannel(), terminalPhone,
-                            JT808Const.cmd_terminal_attribute_query);
-                }
+                sendToTerminalHeaderNoReplyFlowId(ctx, session.getChannel(), terminalPhone,
+                        JT808Const.cmd_terminal_attribute_query);
                 break;
 
             // 文本信息下发
@@ -132,68 +122,51 @@ public class JT808ServerTextWebSocketFrameHandler extends SimpleChannelInboundHa
             // 存储多媒体数据检索
             case JT808Const.cmd_saved_media_request:
                 System.out.println("【存储多媒体数据检索】");
-                if (session != null) {
-                    savedMediaResourcesQuery(ctx, session.getChannel(), terminalPhone);
-                }
+                savedMediaResourcesQuery(ctx, session.getChannel(), terminalPhone);
                 break;
 
             // 查询终端音视频属性
             case JT808Const.cmd_Terminal_media_attribute_query:
                 System.out.println("【查询终端音视频属性】");
-                if (session != null) {
-                    sendToTerminalHeaderNoReplyFlowId(ctx, session.getChannel(), terminalPhone, JT808Const.cmd_Terminal_media_attribute_query);
-                }
+                sendToTerminalHeaderNoReplyFlowId(ctx, session.getChannel(), terminalPhone, JT808Const.cmd_Terminal_media_attribute_query);
                 break;
 
             // 实时音视频传输请求
             case JT808Const.cmd_real_time_media_transmission_request:
                 System.out.println("【实时音视频传输请求】");
-                if (session != null) {
-                    realTimeMediaTransmissionRequest(ctx, session.getChannel(), terminalPhone);
-                }
+                realTimeMediaTransmissionRequest(ctx, session.getChannel(), terminalPhone);
                 break;
 
             // 音视频实时传输控制
             case JT808Const.cmd_real_time_media_transmission_control:
                 System.out.println("【音视频实时传输控制】");
-                if (session != null) {
-                    realTimeMediaTransmissionControl(ctx, session.getChannel(), terminalPhone);
-                }
+                realTimeMediaTransmissionControl(ctx, session.getChannel(), terminalPhone);
                 break;
 
             // 实时音视频传输状态通知
             case JT808Const.cmd_real_time_media_transmission_state:
                 System.out.println("【实时音视频传输状态通知】");
-                if (session != null) {
-                    for (int i = 0; i < 32; i++) {
-                        realTimeMediaTransmissionState(i, ctx, session.getChannel(), terminalPhone);
-                    }
-
+                for (int i = 0; i < 32; i++) {
+                    realTimeMediaTransmissionState(i, ctx, session.getChannel(), terminalPhone);
                 }
                 break;
 
             // 查询资源列表
             case JT808Const.cmd_media_resources_query:
                 System.out.println("【查询资源列表】");
-                if (session != null) {
-                    mediaResourcesQuery(ctx, session.getChannel(), terminalPhone);
-                }
+                mediaResourcesQuery(ctx, session.getChannel(), terminalPhone);
                 break;
 
             // 摄像头立即拍摄命令
             case JT808Const.cmd_camera_photo:
                 System.out.println("【摄像头立即拍摄命令】");
-                if (session != null) {
-                    cameraPhoto(ctx, session.getChannel(), terminalPhone);
-                }
+                cameraPhoto(ctx, session.getChannel(), terminalPhone);
                 break;
 
             // 录音开始命令
             case JT808Const.cmd_record_start:
                 System.out.println("【录音开始命令】");
-                if (session != null) {
-                    recordStart(ctx, session.getChannel(), terminalPhone);
-                }
+                recordStart(ctx, session.getChannel(), terminalPhone);
                 break;
 
             default:
@@ -206,13 +179,17 @@ public class JT808ServerTextWebSocketFrameHandler extends SimpleChannelInboundHa
 
     private void setTerminalParam(ChannelHandlerContext ctx, Channel channel, String terminalPhone) throws Exception {
         byte[] data = BitOperator.concatAll(
-                BitOperator.integerTo1Bytes(2),
+                BitOperator.integerTo1Bytes(1),
 
-               /* BitOperator.integerTo4Bytes(0x0013),
+                BitOperator.integerTo4Bytes(0x0013),
                 BitOperator.integerTo1Bytes(15),
-                "202.194.014.071".getBytes(),*/
+                "221.224.036.196".getBytes()
 
-                BitOperator.integerTo4Bytes(0x0075),
+/*                BitOperator.integerTo4Bytes(0x0018),
+                BitOperator.integerTo1Bytes(6608)*/
+
+                // 0x0075
+                /*BitOperator.integerTo4Bytes(0x0075),
                 BitOperator.integerTo1Bytes(21),        // 长度
                 BitOperator.integerTo1Bytes(0),
                 BitOperator.integerTo1Bytes(5),
@@ -227,6 +204,7 @@ public class JT808ServerTextWebSocketFrameHandler extends SimpleChannelInboundHa
                 BitOperator.integerTo2Bytes(0),         // OSD
                 BitOperator.integerTo1Bytes(0),
 
+                // 0x0076
                 BitOperator.integerTo4Bytes(0x0076),
                 BitOperator.integerTo1Bytes(19),
                 BitOperator.integerTo1Bytes(4),
@@ -247,10 +225,9 @@ public class JT808ServerTextWebSocketFrameHandler extends SimpleChannelInboundHa
                 BitOperator.integerTo1Bytes(4),         // 通道对照表
                 BitOperator.integerTo1Bytes(4),
                 BitOperator.integerTo1Bytes(2),
-                BitOperator.integerTo1Bytes(0)
+                BitOperator.integerTo1Bytes(0)*/
         );
-        CountTool countTool = new CountTool();
-        sendToTerminal(data, ctx, channel, terminalPhone, JT808Const.cmd_terminal_param_settings, countTool);
+        sendToTerminal(data, ctx, channel, terminalPhone, JT808Const.cmd_terminal_param_settings);
     }
 
     private void recordStart(ChannelHandlerContext ctx, Channel channel, String terminalPhone) throws Exception {
@@ -260,8 +237,7 @@ public class JT808ServerTextWebSocketFrameHandler extends SimpleChannelInboundHa
                 BitOperator.integerTo1Bytes(0),                 // 保存标志
                 BitOperator.integerTo1Bytes(0)
         );
-        CountTool countTool = new CountTool();
-        sendToTerminal(data, ctx, channel, terminalPhone, JT808Const.cmd_camera_photo, countTool);
+        sendToTerminal(data, ctx, channel, terminalPhone, JT808Const.cmd_camera_photo);
     }
 
     private void cameraPhoto(ChannelHandlerContext ctx, Channel channel, String terminalPhone) throws Exception {
@@ -277,8 +253,7 @@ public class JT808ServerTextWebSocketFrameHandler extends SimpleChannelInboundHa
                 BitOperator.integerTo1Bytes(64),
                 BitOperator.integerTo1Bytes(128)
         );
-        CountTool countTool = new CountTool();
-        sendToTerminal(data, ctx, channel, terminalPhone, JT808Const.cmd_camera_photo, countTool);
+        sendToTerminal(data, ctx, channel, terminalPhone, JT808Const.cmd_camera_photo);
     }
 
     private void savedMediaResourcesQuery(ChannelHandlerContext ctx, Channel channel, String terminalPhone) throws Exception {
@@ -290,8 +265,7 @@ public class JT808ServerTextWebSocketFrameHandler extends SimpleChannelInboundHa
                 time.getBytes(),
                 time.getBytes()
         );
-        CountTool countTool = new CountTool();
-        sendToTerminal(data, ctx, channel, terminalPhone, JT808Const.cmd_saved_media_request, countTool);
+        sendToTerminal(data, ctx, channel, terminalPhone, JT808Const.cmd_saved_media_request);
     }
 
     private void mediaResourcesQuery(ChannelHandlerContext ctx, Channel channel, String terminalPhone) throws Exception {
@@ -305,12 +279,11 @@ public class JT808ServerTextWebSocketFrameHandler extends SimpleChannelInboundHa
                 BitOperator.integerTo1Bytes(0),
                 BitOperator.integerTo1Bytes(0)
         );
-        CountTool countTool = new CountTool();
-        sendToTerminal(data, ctx, channel, terminalPhone, JT808Const.cmd_media_resources_query, countTool);
+        sendToTerminal(data, ctx, channel, terminalPhone, JT808Const.cmd_media_resources_query);
     }
 
     private void realTimeMediaTransmissionRequest(ChannelHandlerContext ctx, Channel channel, String terminalPhone) throws Exception {
-        String ip = "211.087.225.206";
+        String ip = "211.087.225.203";
         System.out.println(ip.getBytes().length);
         byte[] data = BitOperator.concatAll(
                 BitOperator.integerTo1Bytes(ip.getBytes().length),
@@ -321,8 +294,7 @@ public class JT808ServerTextWebSocketFrameHandler extends SimpleChannelInboundHa
                 BitOperator.integerTo1Bytes(0),
                 BitOperator.integerTo1Bytes(0)
         );
-        CountTool countTool = new CountTool();
-        sendToTerminal(data, ctx, channel, terminalPhone, JT808Const.cmd_real_time_media_transmission_request, countTool);
+        sendToTerminal(data, ctx, channel, terminalPhone, JT808Const.cmd_real_time_media_transmission_request);
     }
 
     private void realTimeMediaTransmissionControl(ChannelHandlerContext ctx, Channel channel, String terminalPhone) throws Exception {
@@ -332,8 +304,7 @@ public class JT808ServerTextWebSocketFrameHandler extends SimpleChannelInboundHa
                 BitOperator.integerTo1Bytes(0),
                 BitOperator.integerTo1Bytes(0)
         );
-        CountTool countTool = new CountTool();
-        sendToTerminal(data, ctx, channel, terminalPhone, JT808Const.cmd_real_time_media_transmission_control, countTool);
+        sendToTerminal(data, ctx, channel, terminalPhone, JT808Const.cmd_real_time_media_transmission_control);
     }
 
     private void realTimeMediaTransmissionState(int i, ChannelHandlerContext ctx, Channel channel, String terminalPhone) throws Exception {
@@ -343,11 +314,10 @@ public class JT808ServerTextWebSocketFrameHandler extends SimpleChannelInboundHa
                 BitOperator.integerTo1Bytes(0),
                 BitOperator.integerTo1Bytes(0)
         );
-        CountTool countTool = new CountTool();
-        sendToTerminal(data, ctx, channel, terminalPhone, JT808Const.cmd_real_time_media_transmission_control, countTool);
+        sendToTerminal(data, ctx, channel, terminalPhone, JT808Const.cmd_real_time_media_transmission_control);
     }
 
-    private void sendToTerminal(byte[] msgBody, ChannelHandlerContext ctx, Channel channel, String terminalPhone, int code, CountTool countTool) throws Exception {
+    private void sendToTerminal(byte[] msgBody, ChannelHandlerContext ctx, Channel channel, String terminalPhone, int code) throws Exception {
         BusinessManager businessManager = BusinessManager.getInstance();
         int replyFlowId = businessManager.currentFlowId();
         System.out.println(replyFlowId + " " + channel);
@@ -377,16 +347,13 @@ public class JT808ServerTextWebSocketFrameHandler extends SimpleChannelInboundHa
         }, countTool.getRetransmissionTime(), TimeUnit.SECONDS));*/
     }
 
-    private void sendToTerminalHeader(ChannelHandlerContext ctx, Channel channel, String terminalPhone, int code, CountTool countTool) throws Exception {
+    private void sendToTerminalHeader(ChannelHandlerContext ctx, Channel channel, String terminalPhone, int code) throws Exception {
         BusinessManager businessManager = BusinessManager.getInstance();
         int replyFlowId = businessManager.currentFlowId();
         System.out.println(replyFlowId + " " + channel);
         businessManager.putByReplyFlowId(replyFlowId, ctx.channel());
-        ChannelFuture future = channel.writeAndFlush(Unpooled.copiedBuffer(JT808ProtocolUtils.sendToTerminalHeader(
-                replyFlowId,
-                terminalPhone,
-                code)));
-        future.addListener((ChannelFutureListener) futureListener -> futureListener.channel().eventLoop().schedule(() -> {
+        channel.writeAndFlush(Unpooled.copiedBuffer(JT808ProtocolUtils.sendToTerminalHeader(replyFlowId, terminalPhone, code)));
+        /*future.addListener((ChannelFutureListener) futureListener -> futureListener.channel().eventLoop().schedule(() -> {
             int count = countTool.getN();
             int retransmissionTime = countTool.getRetransmissionTime();
             if (futureListener.isSuccess() && (BusinessManager.getInstance().findChannelByReplyFlowId(replyFlowId) == null)) {
@@ -406,7 +373,7 @@ public class JT808ServerTextWebSocketFrameHandler extends SimpleChannelInboundHa
                 countTool.setRetransmissionTime(retransmissionTime);
 
             }
-        }, countTool.getRetransmissionTime(), TimeUnit.SECONDS));
+        }, countTool.getRetransmissionTime(), TimeUnit.SECONDS));*/
     }
 
     private void sendToTerminalHeaderNoReplyFlowId(ChannelHandlerContext ctx, Channel channel, String terminalPhone, int code) throws Exception {
@@ -417,7 +384,7 @@ public class JT808ServerTextWebSocketFrameHandler extends SimpleChannelInboundHa
     }
 
     @Override
-    public void handlerAdded(ChannelHandlerContext ctx) throws Exception {
+    public void handlerAdded(ChannelHandlerContext ctx) {
         Channel channel = ctx.channel();
         System.out.println("【有监控终端接入】   " + channel);
         if (ChannelGroupManager.getInstance().findByChannelGroupName("LocationMsg") == null)
@@ -426,12 +393,12 @@ public class JT808ServerTextWebSocketFrameHandler extends SimpleChannelInboundHa
     }
 
     @Override
-    public void handlerRemoved(ChannelHandlerContext ctx) throws Exception {
+    public void handlerRemoved(ChannelHandlerContext ctx) {
         System.out.println("【有监控终端断开】");
     }
 
     @Override
-    public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) throws Exception {
+    public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) {
         System.out.println("【异常发生】");
         cause.printStackTrace();
         ctx.close();

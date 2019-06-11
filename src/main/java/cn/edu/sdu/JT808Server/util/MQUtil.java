@@ -12,6 +12,8 @@ public class MQUtil {
     public static String username;
     public static String password;
 
+    public final static String JT808Server_OriginData_Queue = "JT808Server_OriginData_Queue";
+
     public static ConnectionFactory getConnectionFactory() {
         ConnectionFactory factory = new ConnectionFactory();
         factory.setHost(host);

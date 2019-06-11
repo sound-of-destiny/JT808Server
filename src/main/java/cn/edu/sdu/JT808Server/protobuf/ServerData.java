@@ -706,7 +706,7 @@ public final class ServerData {
         internal_static_protobuf_TerminalBulkLocationMsg_fieldAccessorTable = new
                 com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
                 internal_static_protobuf_TerminalBulkLocationMsg_descriptor,
-                new java.lang.String[]{"DataNum", "DataType", "TerminalLocationMsg", "TerminalPhone", "FlowId",});
+                new java.lang.String[]{"DataNum", "Type", "TerminalLocationMsg", "TerminalPhone", "FlowId",});
         internal_static_protobuf_TerminalMediaDataMsg_descriptor =
                 getDescriptor().getMessageTypes().get(8);
         internal_static_protobuf_TerminalMediaDataMsg_fieldAccessorTable = new

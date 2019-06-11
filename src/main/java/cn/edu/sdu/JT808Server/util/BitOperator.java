@@ -24,9 +24,7 @@ public final class BitOperator {
 
 	public static byte[] integerTo3Bytes(int value) {
 		byte[] result = new byte[3];
-		result[0] = (byte) ((value >>> 16) & 0xFF);
-		result[1] = (byte) ((value >>> 8) & 0xFF);
-		result[2] = (byte) (value & 0xFF);
+
 		return result;
 	}
 

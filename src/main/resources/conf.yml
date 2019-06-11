@@ -1,5 +1,5 @@
-terminalPort: 10000
-webPort: 10002
+terminalPort: 6608
+clientPort: 10002
 testPort: 10001
 
 

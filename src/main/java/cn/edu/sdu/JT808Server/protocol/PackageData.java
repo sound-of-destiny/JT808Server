@@ -1,7 +1,5 @@
 package cn.edu.sdu.JT808Server.protocol;
 
-import java.util.Arrays;
-
 public class PackageData {
 
     //消息头 byte[0-15]
@@ -52,12 +50,6 @@ public class PackageData {
         this.msgHeader = msgHeader;
         this.msgBody = msgBody;
         this.checkSum = checkSum;
-    }
-
-    @Override
-    public String toString() {
-        return "PackageData [msgHeader=" + msgHeader + ", msgBodyBytes=" + Arrays.toString(msgBody) + ", checkSum="
-                + checkSum /*+ ", address=" + channel */+ "]";
     }
 
 }

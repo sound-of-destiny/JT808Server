@@ -11,7 +11,6 @@ import java.util.function.BiConsumer;
 
 public class SessionManager {
 
-	private static volatile SessionManager instance = null;
 	// netty生成的sessionID和Session的对应关系
 	private Map<String, Session> sessionIdMap;
 	// 终端手机号和netty生成的sessionID的对应关系
@@ -20,22 +19,24 @@ public class SessionManager {
 	private Map<String, String> authenticationCodeMap;
 
 	public static SessionManager getInstance() {
-		if (instance == null) {
-			synchronized (SessionManager.class) {
-				if (instance == null) {
-					instance = new SessionManager();
-				}
-			}
-		}
-		return instance;
+		return Singleton.INSTANCE.getSingleton();
 	}
-
-
 
 	private SessionManager() {
 		this.sessionIdMap = new ConcurrentHashMap<>();
 		this.phoneMap = new ConcurrentHashMap<>();
 		this.authenticationCodeMap = new ConcurrentHashMap<>();
+	}
+
+	private enum Singleton {
+		INSTANCE;
+		private SessionManager singleton;
+		Singleton() {
+			singleton = new SessionManager();
+		}
+		public SessionManager getSingleton() {
+			return singleton;
+		}
 	}
 
 	public Session findBySessionId(String id) {
